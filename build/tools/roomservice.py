@@ -43,7 +43,8 @@ except ImportError:
 DEBUG = True
 
 custom_local_manifest = ".repo/local_manifests/default.xml"
-custom_default_revision = "lineage-18.1"
+custom_default_revision = "stellar-S1"
+custom_github_revision = "lineage-18.1"
 custom_dependencies = "stellar.dependencies"
 org_manifest = "devices"  # leave empty if org is provided in manifest
 org_display = "Stellar-Devices"  # needed for displaying
@@ -185,6 +186,7 @@ def add_to_manifest(repos, fallback_branch=None):
             repo_remote=org_manifest
         elif "/" in repo_name:
             repo_remote="github"
+            repo_branch=custom_github_revision
 
         if is_in_manifest(repo_path):
             print('already exists: %s' % repo_path)
@@ -356,13 +358,13 @@ def main():
         repo_name = repository['name']
         print (repository['name'])
 
-        if not (repo_name.startswith("device_") and
+        if not ((repo_name.startswith("device_") or repo_name.startswith("android_device_")) and
                 repo_name.endswith("_" + device)):
             continue
         print("Found repository: %s" % repository['name'])
 
         fallback_branch = detect_revision(repository)
-        manufacturer = repo_name[7:-(len(device)+1)]
+        manufacturer = repo_name[(15 if repo_name.startswith("android_device_") else 7):-(len(device)+1)]
         repo_path = "device/%s/%s" % (manufacturer, device)
         adding = [{'repository': repo_name, 'target_path': repo_path}]
 
